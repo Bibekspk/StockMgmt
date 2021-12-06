@@ -11,11 +11,11 @@ app.get('/hi',(req,res,next)=>{
     res.send("HI");
 })
 
-app.listen(3000,(err,done)=>{
+app.listen(process.env.PORT,(err,done)=>{
     if(err){
         console.log("Server was interupted")
     }
     else{
-        console.log("Server started at 3000 port")
+        console.log("Server started at port",process.env.PORT)
     }
 })
