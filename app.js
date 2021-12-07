@@ -1,15 +1,31 @@
 const express = require("express"); // importing express
 const app = express(); //creating app 
 require('./database'); //importing the database 
+// app.use(express.json());
+app.use(express.urlencoded({extended:true}))
+const approuter = require('./app-routing')
 
-// app.get('/',(req,res,next)=>{
-//     res.send("Hello");
-// })
 
-app.get('/hi',(req,res,next)=>{
-    console.log(req.query); //site ma /hi?name=Bibek use garey yeta req.query garda {name : "Bibek" } aaucha 
-    res.send("HI");
+app.use('/v1',approuter);
+app.use((req,res,next)=>{
+    res.send({
+        msg: "Error occured",
+        status: 400
+    })
 })
+
+app.use((error,req,res,next)=>{ // error recieves error message from next 
+    res.status(error.status || 400); // error handler
+    res.send({
+        msg: error.msg,
+        status: error.status
+    })
+})
+
+// app.get('/hi',(req,res,next)=>{
+//     console.log(req.query); //site ma /hi?name=Bibek use garey yeta req.query garda {name : "Bibek" } aaucha 
+//     res.send("HI");
+// })
 
 app.listen(process.env.PORT,(err,done)=>{
     if(err){
