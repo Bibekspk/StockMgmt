@@ -34,7 +34,7 @@ const register=(req,res,next)=>{
 
 const login = (req,res,next)=>{
     UserModel.findOne({
-        $or:[
+        $or:[ // or is for either one of the option like gmail or username 
             {username: req.body.username},
             {email: req.body.username}
         ]
