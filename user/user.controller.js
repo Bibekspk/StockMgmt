@@ -11,7 +11,7 @@ const Generatetoken = (userId)=>{
 const register=(req,res,next)=>{
     let data = req.body;
     let user = new UserModel({});
-    userQuery.mapUser(data,user)
+    userQuery.mapUser(data,user);
     user.password = passwordHash.generate(data.password)
     user.save((err,user)=>{
         if(err){
@@ -36,7 +36,7 @@ const login = (req,res,next)=>{
     UserModel.findOne({
         $or:[ // or is for either one of the option like gmail or username 
             {username: req.body.username},
-            {email: req.body.username}
+            {mail: req.body.username}
         ]
     },(err,user)=>{
        if(err){

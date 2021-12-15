@@ -1,8 +1,10 @@
 const express = require("express"); // importing express
+const cors = require('cors')
 const app = express(); //creating app 
 require('./database'); //importing the database 
-// app.use(express.json());
-app.use(express.urlencoded({extended:true}))
+app.use(cors());
+app.use(express.json()); // json object, x-form-urlencoded 
+app.use(express.urlencoded({extended:true})) // form data recieve , array of string
 const approuter = require('./app-routing')
 
 
