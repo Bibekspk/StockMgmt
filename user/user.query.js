@@ -21,6 +21,9 @@ const mapUser = (data,model)=>{
     if(data.role){
         model.role = data.role
     }
+    if(data.branch){
+        model.branch = data.branch
+    }
 
     return model
 }

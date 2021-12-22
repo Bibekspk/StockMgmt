@@ -22,7 +22,7 @@ const register=(req,res,next)=>{
         }
         else{
             console.log("Registered successfully");
-            res.send({
+            res.json({
                 msg: "Registered successfully",
                 status : 200,
                 data : user

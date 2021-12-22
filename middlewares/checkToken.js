@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const UserModel = require('../user/user.model');
 
-export const VerifyToken=(req,res,next)=>{
+exports.VerifyToken=(req,res,next)=>{ //exporting function directly 
     let token;
     if(req.headers['authorization']){
         token = req.headers['authorization']

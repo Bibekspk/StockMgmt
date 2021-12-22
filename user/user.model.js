@@ -32,6 +32,10 @@ const UserSchema = new schema({
     contact:{
         type: String,
         required: true
+    },
+    branch:{
+        type:String,
+        required:true
     }
 })
 

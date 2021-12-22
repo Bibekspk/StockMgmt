@@ -5,20 +5,20 @@ require('./database'); //importing the database
 app.use(cors());
 app.use(express.json()); // json object, x-form-urlencoded 
 app.use(express.urlencoded({extended:true})) // form data recieve , array of string
-const approuter = require('./app-routing')
-
-
+const approuter = require('./app-routing');
 app.use('/v1',approuter);
+
 app.use((req,res,next)=>{
-    res.send({
+    res.json({
         msg: "Error occured",
         status: 400
     })
 })
 
+// error handler
 app.use((error,req,res,next)=>{ // error recieves error message from next 
-    res.status(error.status || 400); // error handler
-    res.send({
+    res.statusCode=error.status || 400; 
+    res.json({
         msg: error.msg,
         status: error.status
     })
