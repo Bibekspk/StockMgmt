@@ -1,4 +1,5 @@
 const StockModel = require('./stock.model');
+const ItemTypeModel=require('./itemType.model');
 const StockQuery = require('./stock.query');
 
 const AddStock = (req,res,next)=>{
@@ -26,7 +27,26 @@ const AddItemType=(req,res,next)=>{
         })
 }
 
+const GetItemType=(req,res,next)=>{
+    ItemTypeModel.find({},(err,done)=>{
+        if(err){
+            return next({
+                msg: err,
+                status:400
+            })
+        }
+        if(done){
+            res.json({
+                msg:"Successful",
+                data: done,
+                status:400
+            })
+        }
+    })
+}
+
 module.exports ={
     AddStock,
-    AddItemType
+    AddItemType,
+    GetItemType
 }
