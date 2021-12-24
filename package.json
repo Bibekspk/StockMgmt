@@ -16,6 +16,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.14",
     "nodemon": "^2.0.15",
-    "password-hash": "^1.2.2"
+    "password-hash": "^1.2.2",
+    "simple-mongoose-autoincrement": "^1.2.1"
   }
 }

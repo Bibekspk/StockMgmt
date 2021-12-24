@@ -14,14 +14,6 @@ const StockSchema = new Schema({
         type: String,
         required: true
     },
-    rate:{
-        type: String,
-        required:true
-    },
-    purchasedDate:{
-        type:Date,
-        required: true
-    },
     branch:String,
 
 })
