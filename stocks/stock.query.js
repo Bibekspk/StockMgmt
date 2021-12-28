@@ -1,5 +1,5 @@
 const ItemTypeModel = require('./itemType.model');
-
+const ItemModel = require('./item.model');
 
 const FindItemType = (condition) => {
     return new Promise((resolve, reject) => {
@@ -26,6 +26,32 @@ const FindItemType = (condition) => {
     })
 }
 
+const FindItem=(condition)=>{
+    return new Promise((resolve,reject)=>{
+        ItemModel.findOne(condition,(err,item)=>{
+            if(err){
+                return reject("Item addition error occured")
+            }
+            if(item){
+                return reject("Item already exists in the system")
+            }
+            if(!item){
+                let model = new ItemModel({});
+                model.itemName = condition.itemName
+                model.save((err,done)=>{
+                    if(err){
+                        return reject(err)
+                    }
+                    else{
+                        resolve(done)
+                    }
+                })
+            }
+        })
+    })
+}
+
 module.exports = {
-    FindItemType
+    FindItemType,
+    FindItem
 }
