@@ -1,14 +1,42 @@
-const StockModel = require('./stock.model');
 const ItemTypeModel=require('./itemType.model');
 const ItemModel = require('./item.model')
 const StockQuery = require('./stock.query');
 
 const AddStock = (req,res,next)=>{
-    console.log(req.user.branch);
+    let arrayStock = req.body;
+    console.log(req.body);
+    arrayStock.map((item)=>{
+        StockQuery.FindItemStock({itemName: item.itemName})
+            .then((stockItem)=>{
+                stockItem.totalStock = parseInt(stockItem.totalStock) + Number(item.quantity);
+                stockItem.price.push(item.price);
+                stockItem.quantity.push(item.quantity);
+                stockItem.save((err,done)=>{
+                    console.log("inside save");
+                    if(err){
+                        return next({
+                            msg:"not saved",
+                            status: 400
+                        })
+                    }
+                    else{
+                        res.json({
+                            data: done,
+                            status:200
+                        })
+                    }
+                })
+            })
+            .catch((err)=>{
+                return next({
+                    msg:err,
+                    status: 400
+                })
+            })
+    })
 }
 
 const AddItemType=(req,res,next)=>{
-    console.log(req.body);
     let condition={};
     condition.itemType = req.body.itemType.toUpperCase().replaceAll(' ','');
     StockQuery.FindItemType(condition)
@@ -30,8 +58,8 @@ const AddItemType=(req,res,next)=>{
 
 const AddItem= (req,res,next)=>{
     let condition = {};
-    condition.itemName = req.body.ItemName.replace(/ +/g, '-').toUpperCase();
-    StockQuery.FindItem(condition)
+    condition.itemName = req.body.ItemName.replace(/ +/g, '-').toUpperCase(); //removes all the spaces 
+    StockQuery.AddItem(condition)
         .then((resolve)=>{
             res.json({
                 msg: "Successfully Added",

@@ -10,10 +10,12 @@ const StockSchema = new Schema({
         type: String,
         required: true
     },
-    quantity:{
+    totalStock:{
         type: String,
         required: true
     },
+    price:[String],
+    quantity:[String],
     branch:String,
 
 })

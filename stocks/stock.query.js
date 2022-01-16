@@ -1,5 +1,6 @@
 const ItemTypeModel = require('./itemType.model');
 const ItemModel = require('./item.model');
+// const StockModel = require('./stock.model')
 
 const FindItemType = (condition) => {
     return new Promise((resolve, reject) => {
@@ -26,7 +27,20 @@ const FindItemType = (condition) => {
     })
 }
 
-const FindItem=(condition)=>{
+const FindItemStock=(condition)=>{
+    return new Promise((resolve,reject)=>{
+        ItemModel.findOne(condition,(err,stock)=>{
+            if(err){
+                return reject("Not found")
+            }
+            else{
+                resolve(stock)
+            }
+        })
+    })
+}
+
+const AddItem=(condition)=>{
     return new Promise((resolve,reject)=>{
         ItemModel.findOne(condition,(err,item)=>{
             if(err){
@@ -38,6 +52,7 @@ const FindItem=(condition)=>{
             if(!item){
                 let model = new ItemModel({});
                 model.itemName = condition.itemName
+                model.totalStock = 0
                 model.save((err,done)=>{
                     if(err){
                         return reject(err)
@@ -53,5 +68,6 @@ const FindItem=(condition)=>{
 
 module.exports = {
     FindItemType,
-    FindItem
+    AddItem,
+    FindItemStock
 }

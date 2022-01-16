@@ -3,9 +3,12 @@ const autoIncrement = require('simple-mongoose-autoincrement');
 const Schema = mongoose.Schema;
 
 const ItemSchema = new Schema({
-    itemName: String
+    itemName: String,
+    totalStock: Number,
+    price: [String],
+    quantity: [String],
 })
 
-ItemSchema.plugin(autoIncrement,{field:'ItemRef'})
+ItemSchema.plugin(autoIncrement, { field: 'ItemRef' })
 
-module.exports = mongoose.model('Items',ItemSchema);
+module.exports = mongoose.model('Items', ItemSchema);
