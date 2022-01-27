@@ -66,9 +66,7 @@ const AddItemPurchase = (arrayStock) => {
                 .catch((err) => {
                     return reject(err)
                 })
-        })
-        
-       
+        })  
     })
 }
 
