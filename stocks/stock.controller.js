@@ -3,11 +3,12 @@ const ItemModel = require('./item.model')
 const StockQuery = require('./stock.query');
 
 const AddStock = (req,res,next)=>{
-    let arrayStock = req.body;
-    let recievedItems = []
+    let arrayStock = req.body.purchaseArray;
+    let billno = req.body.billno
+    let purchaseDate = req.body.purchaseDate;
+    console.log(billno,purchaseDate);
     StockQuery.AddItemPurchase(arrayStock)
         .then((response)=>{
-            console.log("response",response)
             res.json({
                 data: response,
                 status: 200

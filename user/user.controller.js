@@ -4,69 +4,73 @@ const userQuery = require('./user.query');
 const jsonwebtoken = require("jsonwebtoken");
 
 
-const Generatetoken = (userId)=>{
-   return jsonwebtoken.sign({id:userId},process.env.SECRETKEY,{expiresIn:"10d"})
+const Generatetoken = (userId) => {
+    return jsonwebtoken.sign({ id: userId }, process.env.SECRETKEY, { expiresIn: "10d" })
 }
 
-const register=(req,res,next)=>{
+const register = (req, res, next) => {
     let data = req.body;
     let user = new UserModel({});
-    userQuery.mapUser(data,user);
+    userQuery.mapUser(data, user);
     user.password = passwordHash.generate(data.password)
-    user.save((err,user)=>{
-        if(err){
+    user.save((err, user) => {
+        if (err) {
             next({
                 msg: err,
                 status: 400
             })
         }
-        else{
+        else {
             console.log("Registered successfully");
             res.json({
                 msg: "Registered successfully",
-                status : 200,
-                data : user
+                status: 200,
+                data: user
             })
-        }   
+        }
     })
 
 }
 
-const login = (req,res,next)=>{
+const login = (req, res, next) => {
+    console.log(req.body);
     UserModel.findOne({
-        $or:[ // or is for either one of the option like gmail or username 
-            {username: req.body.username},
-            {mail: req.body.username}
+        $or: [ // or is for either one of the option like gmail or username 
+            { username: req.body.username },
+            { mail: req.body.username }
         ]
-    },(err,user)=>{
-       if(err){
-           return next({
-               msg: err,
-               status: 401
-           })
-       }
-       if(!user){
-           return next({
-               msg: "User is not found",
-               status: 401
-           })
-       }
-       
-       let passwordCheck = passwordHash.verify(req.body.password,user.password)
-       if(!passwordCheck){
+    }, (err, user) => {
+        if (err) {
             return next({
-                msg: "Username or password is invalid"
+                msg: err,
+                status: 401
             })
-       }
-       let token  = Generatetoken(user._id)
-       res.json({
-           user: user,
-           token
-       })
+        }
+        if(!user){
+            return next({
+                msg:"Username or password is invalid",
+                status: 401
+            })
+        }
+        if (user) {
+            let passwordCheck = passwordHash.verify(req.body.password, user.password)
+            if (!passwordCheck) {
+                return next({
+                    msg: "Username or password is invalid"
+                })
+            }
+            let token = Generatetoken(user._id)
+            res.json({
+                user: user,
+                token
+            })
+        }
+
+
     })
 }
 
-module.exports ={
+module.exports = {
     register,
     login
 }

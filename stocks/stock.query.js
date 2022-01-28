@@ -44,14 +44,14 @@ const AddItemPurchase = (arrayStock) => {
     return new Promise((resolve, reject) => {
         let recievedItem = [];
         arrayStock.map((item) => {
-            console.log("item",item.itemName);
+            // console.log("item",item.itemName);
             FindItemStock({ itemName: item.itemName })
                 .then((stockItem) => {
                     stockItem.totalStock = parseInt(stockItem.totalStock) + Number(item.quantity);
                     stockItem.price.push(item.price);
                     stockItem.quantity.push(item.quantity);
                     stockItem.save((err, done) => {
-                        console.log("inside save",stockItem);
+                        // console.log("inside save",stockItem);
                         if (err) {
                             return reject("Not Saved")
                         }

@@ -8,7 +8,7 @@ db.connect(DB_URL,(err,done)=>{
     }
     else{
         console.log("DB connection succeded");
-        console.log(DB_URL);
+        // console.log(DB_URL);
     }
 
 })
