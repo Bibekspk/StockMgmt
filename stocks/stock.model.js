@@ -20,6 +20,4 @@ const StockSchema = new Schema({
 
 })
 
-
-
 module.exports = mongoose.model('Stocks',StockSchema);

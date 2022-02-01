@@ -1,5 +1,7 @@
 const ItemTypeModel = require('./itemType.model');
 const ItemModel = require('./item.model');
+const PurchaseModel = require('./purchase.model');
+
 // const StockModel = require('./stock.model')
 
 const FindItemType = (condition) => {
@@ -40,11 +42,36 @@ const FindItemStock = (condition) => {
     })
 }
 
-const AddItemPurchase = (arrayStock) => {
+const AddItemPurchase= (itemArray,billno,purchaseDate)=>{
+    return new Promise((resolve,reject)=>{
+        let purchaseModel = new PurchaseModel({});
+        purchaseModel.billno = billno;
+        purchaseModel.purchaseDate = purchaseDate;
+        purchaseModel.items = itemArray;
+        let totalAmount = 0;
+        itemArray.map((item)=>{
+            console.log(typeof item.price,typeof item.quantity);
+            let itemAmount = Number(item.price) * Number(item.quantity);
+            totalAmount = totalAmount + itemAmount;
+        });
+        purchaseModel.totalAmount= totalAmount
+        purchaseModel.save((err,done)=>{
+            if(err){
+                return reject(err)
+            }
+            if(done){
+                resolve(done)
+            }
+        })
+
+    })
+}
+
+
+const AddItemStock = (arrayStock) => {
     return new Promise((resolve, reject) => {
         let recievedItem = [];
         arrayStock.map((item) => {
-            // console.log("item",item.itemName);
             FindItemStock({ itemName: item.itemName })
                 .then((stockItem) => {
                     stockItem.totalStock = parseInt(stockItem.totalStock) + Number(item.quantity);
@@ -99,6 +126,7 @@ const AddNewItem = (condition) => {
 module.exports = {
     FindItemType,
     AddNewItem,
-    AddItemPurchase,
-    FindItemStock
+    AddItemStock,
+    FindItemStock,
+    AddItemPurchase
 }

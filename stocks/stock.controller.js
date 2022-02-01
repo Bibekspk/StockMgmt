@@ -1,18 +1,29 @@
-const ItemTypeModel=require('./itemType.model');
+const ItemTypeModel = require('./itemType.model');
 const ItemModel = require('./item.model')
 const StockQuery = require('./stock.query');
 
-const AddStock = (req,res,next)=>{
+const AddStock = (req, res, next) => {
     let arrayStock = req.body.purchaseArray;
-    let billno = req.body.billno
+    let billno = req.body.billno;
     let purchaseDate = req.body.purchaseDate;
-    console.log(billno,purchaseDate);
-    StockQuery.AddItemPurchase(arrayStock)
+    console.log(billno, purchaseDate);
+    StockQuery.AddItemPurchase(arrayStock, billno, purchaseDate)
         .then((response)=>{
-            res.json({
-                data: response,
-                status: 200
-            })
+            console.log("inside response ");
+            StockQuery.AddItemStock(arrayStock)
+                .then((response) => {
+                    res.json({
+                        data: response,
+                        status: 200,
+                        msg: "Successfully Added"
+                    })
+                })
+                .catch((err) => {
+                    return next({
+                        msg: err,
+                        status: 400
+                    })
+                })
         })
         .catch((err)=>{
             return next({
@@ -20,40 +31,39 @@ const AddStock = (req,res,next)=>{
                 status: 400
             })
         })
-   
 }
 
-const AddItemType=(req,res,next)=>{
-    let condition={};
-    condition.itemType = req.body.itemType.toUpperCase().replaceAll(' ','');
+const AddItemType = (req, res, next) => {
+    let condition = {};
+    condition.itemType = req.body.itemType.toUpperCase().replaceAll(' ', '');
     StockQuery.FindItemType(condition)
-        .then((data)=>{
+        .then((data) => {
             res.json({
                 msg: "ItemType Added Successfully",
                 data,
-                status:200
+                status: 200
             })
         })
-        .catch((err)=>{
+        .catch((err) => {
             console.log(err);
             return next({
-                msg : err,
+                msg: err,
                 status: 400
             })
         })
 }
 
-const AddItem= (req,res,next)=>{
+const AddItem = (req, res, next) => {
     let condition = {};
     condition.itemName = req.body.ItemName.replace(/ +/g, '-').toUpperCase(); //removes all the spaces 
     StockQuery.AddNewItem(condition)
-        .then((resolve)=>{
+        .then((resolve) => {
             res.json({
                 msg: "Successfully Added",
                 status: 200
             })
         })
-        .catch((err)=>{
+        .catch((err) => {
             return next({
                 msg: err,
                 status: 400
@@ -62,38 +72,38 @@ const AddItem= (req,res,next)=>{
 
 }
 
-const GetItemType=(req,res,next)=>{
-    ItemTypeModel.find({},(err,done)=>{
-        if(err){
-            return next({
-                msg: err,
-                status:400
-            })
-        }
-        if(done && !done.length){
-            return next({
-                msg: "Items not found"
-            })
-        }
-        if(done){
-            res.json({
-                msg:"Successful",
-                data: done,
-                status:400
-            })
-        }
-    })
-}
-
-const GetItems = (req,res,next)=>{
-    ItemModel.find({},(err,done)=>{
-        if(err){
+const GetItemType = (req, res, next) => {
+    ItemTypeModel.find({}, (err, done) => {
+        if (err) {
             return next({
                 msg: err,
                 status: 400
             })
         }
-        if(done){
+        if (done && !done.length) {
+            return next({
+                msg: "Items not found"
+            })
+        }
+        if (done) {
+            res.json({
+                msg: "Successful",
+                data: done,
+                status: 400
+            })
+        }
+    })
+}
+
+const GetItems = (req, res, next) => {
+    ItemModel.find({}, (err, done) => {
+        if (err) {
+            return next({
+                msg: err,
+                status: 400
+            })
+        }
+        if (done) {
             res.json({
                 msg: "Successful",
                 data: done,
@@ -103,7 +113,7 @@ const GetItems = (req,res,next)=>{
     })
 }
 
-module.exports ={
+module.exports = {
     AddStock,
     AddItemType,
     GetItemType,
