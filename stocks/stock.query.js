@@ -1,33 +1,32 @@
-const ItemTypeModel = require('./itemType.model');
 const ItemModel = require('./item.model');
 const PurchaseModel = require('./purchase.model');
 
 // const StockModel = require('./stock.model')
 
-const FindItemType = (condition) => {
-    return new Promise((resolve, reject) => {
-        ItemTypeModel.findOne(condition, (err, done) => {
-            if (err) {
-                return reject("Item type error occured")
-            }
-            if (done) {// checking if itemType is already in the DB
-                return reject("Item type is already in the system")
-            }
-            if (!done) { //if not in the system, then add to the db.
-                let ItemsModel = new ItemTypeModel({});
-                ItemsModel.itemType = condition.itemType
-                ItemsModel.save((err, done) => {
-                    if (err) {
-                        return reject(err)
-                    }
-                    else {
-                        resolve(done)
-                    }
-                })
-            }
-        })
-    })
-}
+// const FindItemType = (condition) => {
+//     return new Promise((resolve, reject) => {
+//         ItemTypeModel.findOne(condition, (err, done) => {
+//             if (err) {
+//                 return reject("Item type error occured")
+//             }
+//             if (done) {// checking if itemType is already in the DB
+//                 return reject("Item type is already in the system")
+//             }
+//             if (!done) { //if not in the system, then add to the db.
+//                 let ItemsModel = new ItemTypeModel({});
+//                 ItemsModel.itemType = condition.itemType
+//                 ItemsModel.save((err, done) => {
+//                     if (err) {
+//                         return reject(err)
+//                     }
+//                     else {
+//                         resolve(done)
+//                     }
+//                 })
+//             }
+//         })
+//     })
+// }
 
 const FindItemStock = (condition) => {
     return new Promise((resolve, reject) => {
@@ -124,7 +123,6 @@ const AddNewItem = (condition) => {
 }
 
 module.exports = {
-    FindItemType,
     AddNewItem,
     AddItemStock,
     FindItemStock,
