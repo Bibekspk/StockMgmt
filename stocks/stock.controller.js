@@ -6,11 +6,11 @@ const AddStock = (req, res, next) => {
     let arrayStock = req.body.purchaseArray;
     let billno = req.body.billno;
     let purchaseDate = req.body.purchaseDate;
-    console.log(billno, purchaseDate);
-    StockQuery.AddItemPurchase(arrayStock, billno, purchaseDate)
+    // console.log(billno, purchaseDate);
+    StockQuery.AddItemPurchase(arrayStock, billno, purchaseDate) //to add into purchase db 
         .then((response)=>{
-            console.log("inside response ");
-            StockQuery.AddItemStock(arrayStock)
+            // console.log("inside response ");
+            StockQuery.AddItemStock(arrayStock) // to do addition of stock of the item
                 .then((response) => {
                     res.json({
                         data: response,
