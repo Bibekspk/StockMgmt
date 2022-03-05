@@ -7,6 +7,8 @@ const ItemSchema = new Schema({
     totalStock: Number,
     price: [String],
     quantity: [String],
+    salesPrice: [String],
+    salesQuantity : [String],
 })
 
 ItemSchema.plugin(autoIncrement, { field: 'ItemRef' })

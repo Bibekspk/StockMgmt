@@ -1,4 +1,3 @@
-// const ItemTypeModel = require('./itemType.model');
 const ItemModel = require('./item.model')
 const StockQuery = require('./stock.query');
 
@@ -6,10 +5,8 @@ const AddStock = (req, res, next) => {
     let arrayStock = req.body.purchaseArray;
     let billno = req.body.billno;
     let purchaseDate = req.body.purchaseDate;
-    // console.log(billno, purchaseDate);
     StockQuery.AddItemPurchase(arrayStock, billno, purchaseDate) //to add into purchase db 
         .then((response)=>{
-            // console.log("inside response ");
             StockQuery.AddItemStock(arrayStock) // to do addition of stock of the item
                 .then((response) => {
                     res.json({
@@ -54,9 +51,7 @@ const AddStock = (req, res, next) => {
 // }
 
 const AddItem = (req, res, next) => {
-    let condition = {};
-    condition.itemName = req.body.ItemName.replace(/ +/g, '-').toUpperCase(); //removes all the spaces 
-    StockQuery.AddNewItem(condition)
+    StockQuery.AddNewItem(req.body.ItemName)
         .then((resolve) => {
             res.json({
                 msg: "Successfully Added",
@@ -114,12 +109,36 @@ const GetItems = (req, res, next) => {
 }
 
 const SaleItems = (req,res,next)=>{
-    console.log(req.body);
+    let salesArray = req.body.purchaseArray;
+    let billno = req.body.billno;
+    let salesDate = req.body.salesDate
+    StockQuery.ReduceStockItem(salesArray)
+        .then((data)=>{
+            StockQuery.AddItemSales(salesArray,billno,salesDate)
+                .then((response)=>{
+                    res.json({
+                        status: 200,
+                        msg: "Successfully Added to Sales Depo and stocks modified successfully",
+                        data: response
+                    })
+                })
+                .catch((err)=>{
+                    return next ({
+                        status : 400, 
+                        msg : err
+                    })
+                })
+        })
+        .catch((err)=>{
+            return next({
+                status: 400,
+                msg : err
+            })
+        })
 }
 
 module.exports = {
     AddStock,
-
     AddItem,
     GetItems,
     SaleItems

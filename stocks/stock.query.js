@@ -1,5 +1,6 @@
 const ItemModel = require('./item.model');
 const PurchaseModel = require('./purchase.model');
+const SalesModel = require('./sales.model');
 
 // const StockModel = require('./stock.model')
 
@@ -41,24 +42,24 @@ const FindItemStock = (condition) => {
     })
 }
 
-const AddItemPurchase= (itemArray,billno,purchaseDate)=>{
-    return new Promise((resolve,reject)=>{
+const AddItemPurchase = (itemArray, billno, purchaseDate) => {
+    return new Promise((resolve, reject) => {
         let purchaseModel = new PurchaseModel({});
         purchaseModel.billno = billno;
         purchaseModel.purchaseDate = purchaseDate;
         purchaseModel.items = itemArray;
         let totalAmount = 0;
-        itemArray.map((item)=>{
-            console.log(typeof item.price,typeof item.quantity);
+        itemArray.map((item) => {
+            console.log(typeof item.price, typeof item.quantity);
             let itemAmount = Number(item.price) * Number(item.quantity);
             totalAmount = totalAmount + itemAmount;
         });
-        purchaseModel.totalAmount= totalAmount
-        purchaseModel.save((err,done)=>{
-            if(err){
+        purchaseModel.totalAmount = totalAmount
+        purchaseModel.save((err, done) => {
+            if (err) {
                 return reject(err)
             }
-            if(done){
+            if (done) {
                 resolve(done)
             }
         })
@@ -66,8 +67,30 @@ const AddItemPurchase= (itemArray,billno,purchaseDate)=>{
     })
 }
 
+const AddItemSales = (salesArray, billno, salesDate) => {
+    return new Promise((resolve, reject) => {
+        let salesModel = new SalesModel({});
+        salesModel.billno = billno;
+        salesModel.items = salesArray;
+        salesModel.salesDate = salesDate;
+        let totalAmount = 0;
+        salesArray.map((item) => {
+            let itemAmount = Number(item.price) * Number(item.quantity)
+            totalAmount = totalAmount + itemAmount;
+        });
+        salesModel.totalAmount = totalAmount;
+        salesModel.save((err, done) => {
+            if (err) {
+                return reject("Not saved in sales depo")
+            }
+            if (done) {
+                resolve(done)
+            }
+        })
+    })
+}
 
-const AddItemStock = (arrayStock) => {
+const AddItemStock = (arrayStock) => { //add stock of purchase in their stock
     return new Promise((resolve, reject) => {
         let recievedItem = [];
         arrayStock.map((item) => {
@@ -77,13 +100,12 @@ const AddItemStock = (arrayStock) => {
                     stockItem.price.push(item.price);
                     stockItem.quantity.push(item.quantity);
                     stockItem.save((err, done) => {
-                        // console.log("inside save",stockItem);
                         if (err) {
                             return reject("Not Saved")
                         }
-                        if(done) {
+                        if (done) {
                             recievedItem.push(stockItem);
-                            if(recievedItem.length === arrayStock.length){
+                            if (recievedItem.length === arrayStock.length) {
                                 resolve(recievedItem);
                             }
                         }
@@ -92,22 +114,58 @@ const AddItemStock = (arrayStock) => {
                 .catch((err) => {
                     return reject(err)
                 })
-        })  
+        })
     })
 }
 
-const AddNewItem = (condition) => {
+const ReduceStockItem = (itemArray) => {
     return new Promise((resolve, reject) => {
-        ItemModel.findOne(condition, (err, item) => {
+        let SaleItems = [];
+        itemArray.map((item) => {
+            FindItemStock({ itemName: item.itemName }) // searching stock item
+                .then((stockItem) => {
+                    stockItem.totalStock = parseInt(stockItem.totalStock) - Number(item.quantity)
+                    stockItem.salesPrice.push(item.price);
+                    stockItem.salesQuantity.push(item.quantity);
+                    stockItem.save((err, done) => {
+                        if (err) {
+                            return reject("Not sold")
+                        }
+                        if (done) {
+                            SaleItems.push(stockItem);
+                            if (SaleItems.length === itemArray.length) {
+                                resolve(SaleItems)
+
+                            }
+                        }
+                        else {
+                            return reject("Not all items for sale were modified")
+                        }
+                    })
+                })
+        })
+    })
+}
+
+const AddNewItem = (itemName) => {
+    return new Promise((resolve, reject) => {
+        let newitemName = itemName.trim().replace(/ +/g, '-').toUpperCase();//removes all the spaces 
+        ItemModel.findOne({ itemName: newitemName }, (err, item) => {
             if (err) {
-                return reject("Item addition error occured")
+                return reject(err)
             }
             if (item) {
                 return reject("Item already exists in the system")
             }
+            // if ( item && item.replace('-','').match(itemName.toUpperCase())) { //checking if words matches bcoz
+            // // we have set name with '-' in between spaces so if user provides sona rice it becomes sona-rice;
+            // //and when user types sonarice then due to lack of space it becomes sonarice (becomes new item);
+            // //so to prevent that we are using this to match spell 
+            //     return reject("Item already exists in the system 11")
+            // }
             if (!item) {
                 let model = new ItemModel({});
-                model.itemName = condition.itemName
+                model.itemName = newitemName;
                 model.totalStock = 0
                 model.save((err, done) => {
                     if (err) {
@@ -126,5 +184,7 @@ module.exports = {
     AddNewItem,
     AddItemStock,
     FindItemStock,
-    AddItemPurchase
+    AddItemPurchase,
+    AddItemSales,
+    ReduceStockItem
 }
