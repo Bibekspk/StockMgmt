@@ -147,6 +147,23 @@ const ReduceStockItem = (itemArray) => {
     })
 }
 
+const CheckItems = ()=>{
+    return new Promise((resolve,reject)=>{
+        ItemModel.find({},(err,done)=>{
+            if(err){
+                return reject(err)
+            }
+            if(done){
+               let itemArray =  done.map((item)=>(
+                    item.itemName.replace('-','')
+                )) // returning itemName in array
+                console.log(itemArray);
+                resolve(itemArray);
+            }
+        })
+    })
+}
+
 const AddNewItem = (itemName) => {
     return new Promise((resolve, reject) => {
         let newitemName = itemName.trim().replace(/ +/g, '-').toUpperCase();//removes all the spaces 
@@ -164,17 +181,28 @@ const AddNewItem = (itemName) => {
             //     return reject("Item already exists in the system 11")
             // }
             if (!item) {
-                let model = new ItemModel({});
-                model.itemName = newitemName;
-                model.totalStock = 0
-                model.save((err, done) => {
-                    if (err) {
-                        return reject(err)
-                    }
-                    else {
-                        resolve(done)
-                    }
-                })
+                CheckItems()
+                    .then((itemArray)=>{ //  contains itemArray
+                        if(itemArray.includes(itemName.toUpperCase().trim().replace(/ +/g,''))){ // checking if the new item is already there
+                            return reject("Item already exsits !!")
+                        }
+                        else{ //if not then adding to the DB 
+                            let model = new ItemModel({});
+                            model.itemName = newitemName;
+                            model.totalStock = 0
+                            model.save((err, done) => {
+                                if (err) {
+                                    return reject(err)
+                                }
+                                else {
+                                    resolve(done)
+                                }
+                            })
+                        }
+                    })
+                    .catch((err)=>{
+                        return reject("Error occured during the inspection of item")
+                    })
             }
         })
     })
