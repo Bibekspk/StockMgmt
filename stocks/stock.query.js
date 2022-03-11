@@ -174,16 +174,15 @@ const AddNewItem = (itemName) => {
             if (item) {
                 return reject("Item already exists in the system")
             }
-            // if ( item && item.replace('-','').match(itemName.toUpperCase())) { //checking if words matches bcoz
-            // // we have set name with '-' in between spaces so if user provides sona rice it becomes sona-rice;
-            // //and when user types sonarice then due to lack of space it becomes sonarice (becomes new item);
-            // //so to prevent that we are using this to match spell 
-            //     return reject("Item already exists in the system 11")
-            // }
             if (!item) {
                 CheckItems()
                     .then((itemArray)=>{ //  contains itemArray
                         if(itemArray.includes(itemName.toUpperCase().trim().replace(/ +/g,''))){ // checking if the new item is already there
+                            //checking if words matches bcoz we have set name with '-' in between spaces so
+                            // if user provides sona rice it becomes sona-rice;
+                            //and when user types sonarice then due to lack of space it 
+                            //becomes sonarice (becomes new item);
+                            // //so to prevent that we are using this to match spelling 
                             return reject("Item already exsits !!")
                         }
                         else{ //if not then adding to the DB 
